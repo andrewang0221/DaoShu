@@ -1,0 +1,210 @@
+{
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "道枢·东方智慧AI数字人系统",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/login/login",
+      "style": {
+        "navigationBarTitleText": "账号系统",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/chat/chat",
+      "style": {
+        "navigationBarTitleText": "问道",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/adoption/quiz",
+      "style": {
+        "navigationBarTitleText": "价值观初测",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/adoption/create",
+      "style": {
+        "navigationBarTitleText": "认养数字人",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/knowledge/knowledge",
+      "style": {
+        "navigationBarTitleText": "知识库",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/knowledge-base/knowledge-base",
+      "style": {
+        "navigationBarTitleText": "原创知识基座",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/market/market",
+      "style": {
+        "navigationBarTitleText": "知识市场",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/mine/mine",
+      "style": {
+        "navigationBarTitleText": "我的",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/daoshu/daoshu",
+      "style": {
+        "navigationBarTitleText": "道枢·思维底座",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/healing/healing",
+      "style": {
+        "navigationBarTitleText": "疗愈·减压",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/growth/growth",
+      "style": {
+        "navigationBarTitleText": "道系人格与分享",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/industry/industry",
+      "style": {
+        "navigationBarTitleText": "行业智慧",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/subscription/subscription",
+      "style": {
+        "navigationBarTitleText": "订阅升级",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/symposium/symposium",
+      "style": {
+        "navigationBarTitleText": "论道研讨",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/dao/dao",
+      "style": {
+        "navigationBarTitleText": "求道板块",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/audience/audience",
+      "style": {
+        "navigationBarTitleText": "适用人群与价值",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/study/study",
+      "style": {
+        "navigationBarTitleText": "章节研学",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/llm-settings/llm-settings",
+      "style": {
+        "navigationBarTitleText": "大模型设置",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/ipr/ipr",
+      "style": {
+        "navigationBarTitleText": "知识产权服务",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/admin/dashboard",
+      "style": {
+        "navigationBarTitleText": "管理后台",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/admin/users",
+      "style": {
+        "navigationBarTitleText": "用户管理",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/admin/knowledge",
+      "style": {
+        "navigationBarTitleText": "知识库管理",
+        "navigationStyle": "custom"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "道枢·东方智慧AI数字人系统",
+    "navigationBarBackgroundColor": "#1a1a2e",
+    "backgroundColor": "#f5f5f5",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#8a7f6a",
+    "selectedColor": "#c9a96e",
+    "borderStyle": "white",
+    "backgroundColor": "#fffdf7",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "static/tab/home.png",
+        "selectedIconPath": "static/tab/home-active.png"
+      },
+      {
+        "pagePath": "pages/study/study",
+        "text": "学习",
+        "iconPath": "static/tab/study.png",
+        "selectedIconPath": "static/tab/study-active.png"
+      },
+      {
+        "pagePath": "pages/chat/chat",
+        "text": "问道",
+        "iconPath": "static/tab/chat.png",
+        "selectedIconPath": "static/tab/chat-active.png"
+      },
+      {
+        "pagePath": "pages/market/market",
+        "text": "市场",
+        "iconPath": "static/tab/market.png",
+        "selectedIconPath": "static/tab/market-active.png"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的",
+        "iconPath": "static/tab/mine.png",
+        "selectedIconPath": "static/tab/mine-active.png"
+      }
+    ]
+  }
+}

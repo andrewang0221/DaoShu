@@ -1,0 +1,28 @@
+{
+  "name": "道德经AI数字人学习系统",
+  "appid": "",
+  "description": "以《道德经》为底座、可认养可进化的 AI 数字人智慧学习系统",
+  "versionName": "0.1.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "app-plus": {
+    "usingComponents": true,
+    "nvueStyleCompiler": "uni-app",
+    "compilerVersion": 3
+  },
+  "quickapp": {},
+  "mp-weixin": {
+    "appid": "",
+    "setting": {
+      "urlCheck": false
+    },
+    "usingComponents": true
+  },
+  "h5": {
+    "title": "道枢·东方智慧AI数字人系统",
+    "router": {
+      "mode": "hash"
+    }
+  },
+  "vueVersion": "3"
+}

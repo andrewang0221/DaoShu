@@ -1,0 +1,308 @@
+/* ============================================================
+   道德经 · 管理控制台 — 水墨禅意 × 宋代极简 融合方案
+   
+   设计哲学：
+   - 道法自然：留白即内容，呼吸感节奏
+   - 无为而治：克制用色，少即是多
+   - 宋代美学：简洁、雅致、含蓄、现代融合
+   
+   色彩体系：玄墨/鎏金/宣纸/黛青 四色为主
+   字体体系：宋体/楷体/黑体 三阶层次
+   ============================================================ */
+
+/* ---------- 设计令牌 ---------- */
+:root {
+  /* 色彩：四色体系 */
+  --color-ink: #1a1a2e;              /* 玄墨：深色背景/侧栏 */
+  --color-jade: #2f4a3a;             /* 黛青：主色/按钮 */
+  --color-jade-light: #4a6b55;       /* 黛青浅：hover */
+  --color-jade-dark: #1e3329;        /* 黛青深：active */
+  --color-gold: #c9a86a;             /* 鎏金：强调/点缀 */
+  --color-gold-light: #e3c98e;       /* 鎏金浅：高亮 */
+  --color-paper: #f6f1e6;            /* 宣纸：主背景 */
+  --color-paper-warm: #efe7d4;       /* 宣纸暖：次级背景 */
+  --color-card: #fffdf6;             /* 卡片白 */
+  --color-vermillion: #c03c3b;       /* 朱砂：警示/重点 */
+  --color-bamboo: #6b8e6b;           /* 竹青：成功/成长 */
+  --color-cyan: #7ba7bc;             /* 汝窑青：信息 */
+  
+  /* 文字 */
+  --color-text-primary: #2c2c2c;     /* 墨色：正文 */
+  --color-text-secondary: #6b6356;   /* 次级文字 */
+  --color-text-tertiary: #9e968a;    /* 三级文字 */
+  --color-text-inverse: #f6f1e6;     /* 反色文字 */
+  
+  /* 边框 */
+  --color-border: rgba(201, 168, 106, 0.3);   /* 金色边框 */
+  --color-border-light: rgba(201, 168, 106, 0.15);
+  
+  /* 字体 */
+  --font-serif: "Noto Serif SC", "Source Han Serif SC", "STSong", "SimSun", serif;
+  --font-sans: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-kai: "STKaiti", "KaiTi", "FZQingKeBenYueSongS-R-GB", serif;
+  --font-mono: "Fira Code", "Consolas", monospace;
+  
+  /* 间距：8px 网格 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  
+  /* 圆角 */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+  
+  /* 阴影 */
+  --shadow-soft: 0 2px 12px rgba(26, 26, 46, 0.06);
+  --shadow-medium: 0 4px 20px rgba(26, 26, 46, 0.1);
+  --shadow-heavy: 0 8px 30px rgba(26, 26, 46, 0.15);
+  --shadow-gold: 0 4px 20px rgba(201, 168, 106, 0.3);
+  
+  /* 过渡 */
+  --transition-fast: all 0.2s ease;
+  --transition-normal: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---------- 全局重置 ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  background: var(--color-paper);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---------- 页面背景：宣纸纹理 + 水墨晕染 ---------- */
+.page-bg {
+  min-height: 100%;
+  background:
+    radial-gradient(ellipse at 10% 0%, rgba(201, 168, 106, 0.08), transparent 40%),
+    radial-gradient(ellipse at 90% 100%, rgba(47, 74, 58, 0.05), transparent 35%),
+    radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.4), transparent 60%),
+    linear-gradient(180deg, #f9f5ec 0%, #f4efe3 50%, #efe8d9 100%);
+  background-attachment: fixed;
+}
+
+/* ---------- Element Plus 全局覆写：宋代极简 ---------- */
+
+/* 卡片：轻盈、圆润、呼吸感 */
+.el-card {
+  background: var(--color-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition-normal);
+}
+
+.el-card:hover {
+  box-shadow: var(--shadow-medium);
+  border-color: var(--color-border);
+}
+
+.el-card__header {
+  padding: var(--space-5) var(--space-6);
+  border-bottom: 1px solid var(--color-border-light);
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--color-jade);
+}
+
+/* 表格：清晰、雅致 */
+.el-table {
+  --el-table-header-bg-color: #f8f4e8;
+  --el-table-header-text-color: var(--color-jade);
+  --el-table-border-color: var(--color-border-light);
+  --el-table-row-hover-bg-color: #faf7ee;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.el-table th.el-table__cell {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: 1px;
+  font-size: 13px;
+}
+
+/* 按钮：黛青主色，鎏金强调 */
+.el-button {
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  letter-spacing: 1px;
+  transition: var(--transition-normal);
+}
+
+.el-button--primary {
+  --el-button-bg-color: var(--color-jade);
+  --el-button-border-color: var(--color-jade);
+  --el-button-hover-bg-color: var(--color-jade-light);
+  --el-button-hover-border-color: var(--color-jade-light);
+  --el-button-active-bg-color: var(--color-jade-dark);
+  box-shadow: 0 2px 8px rgba(47, 74, 58, 0.3);
+}
+
+.el-button--primary:hover {
+  box-shadow: 0 4px 12px rgba(47, 74, 58, 0.4);
+  transform: translateY(-1px);
+}
+
+.el-button--warning {
+  --el-button-bg-color: #d4a76a;
+  --el-button-border-color: #d4a76a;
+  color: var(--color-ink);
+}
+
+.el-button--danger {
+  --el-button-bg-color: var(--color-vermillion);
+  --el-button-border-color: var(--color-vermillion);
+}
+
+/* 输入框：简约、清晰 */
+.el-input__wrapper {
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 0 1px var(--color-border-light) inset;
+  transition: var(--transition-normal);
+}
+
+.el-input__wrapper:hover,
+.el-input__wrapper.is-focus {
+  box-shadow: 0 0 0 1px var(--color-jade) inset;
+}
+
+/* 标签：柔和、雅致 */
+.el-tag {
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.el-tag--success {
+  background: rgba(107, 142, 107, 0.15);
+  border-color: rgba(107, 142, 107, 0.3);
+  color: #4a7c4a;
+}
+
+.el-tag--danger {
+  background: rgba(192, 60, 59, 0.1);
+  border-color: rgba(192, 60, 59, 0.3);
+  color: #a03030;
+}
+
+/* 分页：简约 */
+.el-pagination {
+  --el-pagination-hover-color: var(--color-jade);
+  --el-pagination-button-bg-color: transparent;
+}
+
+.el-pagination .el-pager li.is-active {
+  background: var(--color-jade);
+  color: white;
+}
+
+/* 警告提示 */
+.el-alert {
+  border-radius: var(--radius-md);
+  border: 1px solid;
+}
+
+/* 表单 */
+.el-form-item__label {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+/* ---------- 工具类 ---------- */
+.mt-2 { margin-top: var(--space-2); }
+.mt-4 { margin-top: var(--space-4); }
+.mt-6 { margin-top: var(--space-6); }
+.mt-8 { margin-top: var(--space-8); }
+.mb-2 { margin-bottom: var(--space-2); }
+.mb-4 { margin-bottom: var(--space-4); }
+.mb-6 { margin-bottom: var(--space-6); }
+.mb-8 { margin-bottom: var(--space-8); }
+
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+.font-serif { font-family: var(--font-serif); }
+.font-kai { font-family: var(--font-kai); }
+
+.text-gold { color: var(--color-gold); }
+.text-jade { color: var(--color-jade); }
+.text-paper { color: var(--color-paper); }
+.text-muted { color: var(--color-text-secondary); }
+
+/* ---------- 水墨纹理装饰 ---------- */
+.ink-texture::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(26, 26, 46, 0.03), transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(26, 26, 46, 0.02), transparent 40%);
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* 鎏金点缀 */
+.gold-accent {
+  position: relative;
+}
+
+.gold-accent::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+}
+
+/* ---------- 竖排文字 ---------- */
+.vertical-text {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  letter-spacing: 0.3em;
+  line-height: 2.5;
+}
+
+/* ---------- 分割线 ---------- */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-border), transparent);
+  margin: var(--space-8) 0;
+}

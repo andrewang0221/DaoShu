@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face to 3D Blendshape Model</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 20px;
+            height: calc(100vh - 40px);
+        }
+
+        .panel {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow-y: auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            background: #f0f4ff;
+            border-color: #764ba2;
+        }
+
+        .upload-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        #preview {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #canvas3d {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+        }
+
+        .viewer-panel {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .status {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .status.loading {
+            background: #fff3cd;
+            color: #856404;
+            display: block;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .blendshape-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .blendshape-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .blendshape-value {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        #blendshapesPanel {
+            display: none;
+            margin-bottom: 20px;
+        }
+
+        /* Debug Controls */
+        .debug-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px solid #667eea;
+        }
+
+        .debug-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .debug-subsection {
+            margin-bottom: 20px;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            border-left: 4px solid #764ba2;
+        }
+
+        .debug-subsection h4 {
+            color: #764ba2;
+            font-size: 0.95em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .slider-group {
+            margin-bottom: 12px;
+        }
+
+        .slider-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: #333;
+            font-size: 0.85em;
+        }
+
+        .slider-group input[type="range"] {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        .slider-value {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .debug-values {
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 0.7em;
+            white-space: pre-wrap;
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+        }
+
+        .control-group-label {
+            font-size: 0.8em;
+            color: #666;
+            font-weight: 600;
+            margin-top: 10px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
+  <script type="module" crossorigin src="./assets/index-DZuOO8b3.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/three-CuP-2KbA.js">
+  <link rel="modulepreload" crossorigin href="./assets/mediapipe-CRAV3LO_.js">
+</head>
+<body>
+    <h1>🎭 Face to 3D Blendshape Model</h1>
+    
+    <div class="container">
+        <!-- Left Panel - Upload -->
+        <div class="panel">
+            <h2>📸 Upload Photo</h2>
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📁</div>
+                <p>Click or drag an image here</p>
+                <p style="font-size: 0.8em; color: #666; margin-top: 10px;">Supported: JPG, PNG</p>
+            </div>
+            <input type="file" id="fileInput" accept="image/*" style="display: none;">
+            <img id="preview" alt="Preview">
+            
+            <div class="status" id="status"></div>
+            
+            <button id="processBtn" disabled>
+                <span id="processBtnText">Process Image</span>
+            </button>
+            <button id="exportBtn" disabled>💾 Export GLB Model</button>
+            <button id="uploadSysBtn" disabled style="background: linear-gradient(135deg, #5b6b52, #7d8f6e);">⬆️ 上传到数字人系统（需已登录）</button>
+        </div>
+
+        <!-- Center Panel - 3D Viewer -->
+        <div class="panel viewer-panel">
+            <h2>🎬 3D Preview</h2>
+            <canvas id="canvas3d"></canvas>
+        </div>
+
+        <!-- Right Panel - Blendshapes & Debug -->
+        <div class="panel">
+            <div id="blendshapesPanel">
+                <h2>🎭 ARKit Blendshapes</h2>
+                <div id="blendshapesList"></div>
+            </div>
+
+            <!-- Debug Controls -->
+            <div class="debug-section">
+                <h3>🔧 Debug Controls</h3>
+                
+                <!-- HEAD CONTROLS -->
+                <div class="debug-subsection">
+                    <h4>👤 Head Model</h4>
+                    
+                    <div class="control-group-label">Scale</div>
+                    <div class="slider-group">
+                        <label>X: <span class="slider-value" id="headScaleXValue">1.15</span></label>
+                        <input type="range" id="headScaleXSlider" min="0.5" max="3.0" step="0.05" value="1.15">
+                    </div>
+                    <div class="slider-group">
+                        <label>Y: <span class="slider-value" id="headScaleYValue">1.45</span></label>
+                        <input type="range" id="headScaleYSlider" min="0.5" max="3.0" step="0.05" value="1.45">
+                    </div>
+                    <div class="slider-group">
+                        <label>Z: <span class="slider-value" id="headScaleZValue">1.45</span></label>
+                        <input type="range" id="headScaleZSlider" min="0.5" max="3.0" step="0.05" value="1.45">
+                    </div>
+
+                    <div class="control-group-label">Position</div>
+                    <div class="slider-group">
+                        <label>X: <span class="slider-value" id="headPosXValue">0.00</span></label>
+                        <input type="range" id="headPosXSlider" min="-2" max="2" step="0.01" value="0">
+                    </div>
+                    <div class="slider-group">
+                        <label>Y: <span class="slider-value" id="headPosYValue">0.00</span></label>
+                        <input type="range" id="headPosYSlider" min="-2" max="2" step="0.01" value="0">
+                    </div>
+                    <div class="slider-group">
+                        <label>Z: <span class="slider-value" id="headPosZValue">0.00</span></label>
+                        <input type="range" id="headPosZSlider" min="-2" max="2" step="0.01" value="0">
+                    </div>
+
+                    <div class="control-group-label">Rotation (degrees)</div>
+                    <div class="slider-group">
+                        <label>X (Pitch): <span class="slider-value" id="headRotXValue">0°</span></label>
+                        <input type="range" id="headRotXSlider" min="-180" max="180" step="1" value="0">
+                    </div>
+                    <div class="slider-group">
+                        <label>Y (Yaw): <span class="slider-value" id="headRotYValue">0°</span></label>
+                        <input type="range" id="headRotYSlider" min="-180" max="180" step="1" value="0">
+                    </div>
+                    <div class="slider-group">
+                        <label>Z (Roll): <span class="slider-value" id="headRotZValue">0°</span></label>
+                        <input type="range" id="headRotZSlider" min="-180" max="180" step="1" value="0">
+                    </div>
+
+                    <div class="slider-group">
+                        <label>Push Back: <span class="slider-value" id="headPushBackValue">0.40</span></label>
+                        <input type="range" id="headPushBackSlider" min="0" max="1" step="0.05" value="0.40">
+                    </div>
+                </div>
+
+                <!-- FACE CONTROLS -->
+                <div class="debug-subsection">
+                    <h4>😊 Face Mesh</h4>
+                    
+                    <div class="control-group-label">Scale</div>
+                    <div class="slider-group">
+                        <label>X: <span class="slider-value" id="faceScaleXValue">1.00</span></label>
+                        <input type="range" id="faceScaleXSlider" min="0.5" max="2.0" step="0.05" value="1.00">
+                    </div>
+                    <div class="slider-group">
+                        <label>Y: <span class="slider-value" id="faceScaleYValue">1.00</span></label>
+                        <input type="range" id="faceScaleYSlider" min="0.5" max="2.0" step="0.05" value="1.00">
+                    </div>
+                    <div class="slider-group">
+                        <label>Z: <span class="slider-value" id="faceScaleZValue">1.00</span></label>
+                        <input type="range" id="faceScaleZSlider" min="0.5" max="2.0" step="0.05" value="1.00">
+                    </div>
+
+                    <div class="control-group-label">Position</div>
+                    <div class="slider-group">
+                        <label>X: <span class="slider-value" id="facePosXValue">0.00</span></label>
+                        <input type="range" id="facePosXSlider" min="-2" max="2" step="0.01" value="0">
+                    </div>
+                    <div class="slider-group">
+                        <label>Y: <span class="slider-value" id="facePosYValue">0.00</span></label>
+                        <input type="range" id="facePosYSlider" min="-2" max="2" step="0.01" value="0">
+                    </div>
+                    <div class="slider-group">
+                        <label>Z: <span class="slider-value" id="facePosZValue">0.00</span></label>
+                        <input type="range" id="facePosZSlider" min="-2" max="2" step="0.01" value="0">
+                    </div>
+
+                    <div class="control-group-label">Rotation (degrees)</div>
+                    <div class="slider-group">
+                        <label>X (Pitch): <span class="slider-value" id="faceRotXValue">0°</span></label>
+                        <input type="range" id="faceRotXSlider" min="-180" max="180" step="1" value="0">
+                    </div>
+                    <div class="slider-group">
+                        <label>Y (Yaw): <span class="slider-value" id="faceRotYValue">0°</span></label>
+                        <input type="range" id="faceRotYSlider" min="-180" max="180" step="1" value="0">
+                    </div>
+                    <div class="slider-group">
+                        <label>Z (Roll): <span class="slider-value" id="faceRotZValue">0°</span></label>
+                        <input type="range" id="faceRotZSlider" min="-180" max="180" step="1" value="0">
+                    </div>
+                </div>
+
+                <button id="resetDebugBtn" style="background: #dc3545; margin-top: 10px;">🔄 Reset to Defaults</button>
+                <button id="copyValuesBtn" style="background: #28a745;">📋 Copy Current Values</button>
+
+                <div class="debug-values" id="debugValues">Process an image to see debug values...</div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

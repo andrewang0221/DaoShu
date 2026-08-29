@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>道枢·东方智慧AI数字人系统 - 测试页面</title>
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .title {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-size: 18px;
+            color: #8a7f6a;
+        }
+        .status {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #2ecc71;
+        }
+        .status-text {
+            font-size: 14px;
+            color: #5a5a5a;
+        }
+        .links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+        .link-card {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #1a1a2e;
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+        }
+        .link-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: #c9a96e;
+        }
+        .link-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .link-desc {
+            font-size: 14px;
+            color: #8a7f6a;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #f0f0f0;
+            color: #8a7f6a;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">道德经AI数字人学习系统</div>
+            <div class="subtitle">国学风格 + 科技风 前端预览</div>
+            <div class="status">
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <div class="status-text">开发服务器运行中</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <div class="status-text">端口: 5173</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <div class="status-text">地址: localhost:5173</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="links">
+            <a href="http://localhost:5173/" target="_blank" class="link-card">
+                <div class="link-title">📱 H5 主页面</div>
+                <div class="link-desc">访问uni-app主页面，包含首页、对话、市场、我的等完整功能</div>
+            </a>
+            
+            <a href="http://localhost:5173/#/pages/index/index" target="_blank" class="link-card">
+                <div class="link-title">🏠 首页</div>
+                <div class="link-desc">国学风格+科技风的首页设计，包含功能模块、每日一课、认养展示等</div>
+            </a>
+            
+            <a href="http://localhost:5173/#/pages/chat/chat" target="_blank" class="link-card">
+                <div class="link-title">💬 对话页面</div>
+                <div class="link-desc">与AI数字人导师对话，支持自由问道、章节研学等模式</div>
+            </a>
+            
+            <a href="http://localhost:5173/#/pages/knowledge/knowledge" target="_blank" class="link-card">
+                <div class="link-title">📚 知识库</div>
+                <div class="link-desc">检索81章原文与注解，查看知识条目和审核状态</div>
+            </a>
+            
+            <a href="http://localhost:5173/#/pages/market/market" target="_blank" class="link-card">
+                <div class="link-title">💎 知识市场</div>
+                <div class="link-desc">公开知识、引用溯源、积分流通的市场预览</div>
+            </a>
+            
+            <a href="http://localhost:5173/#/pages/admin/dashboard" target="_blank" class="link-card">
+                <div class="link-title">👑 管理后台</div>
+                <div class="link-desc">超级管理员数据看板、用户管理、知识库管理等功能</div>
+            </a>
+            
+            <a href="http://localhost:5173/#/pages/admin/users" target="_blank" class="link-card">
+                <div class="link-title">👥 用户管理</div>
+                <div class="link-desc">查看、搜索、封禁、解封用户，管理用户权限</div>
+            </a>
+            
+            <a href="http://localhost:5173/#/pages/admin/knowledge" target="_blank" class="link-card">
+                <div class="link-title">📚 知识库管理</div>
+                <div class="link-desc">审核知识条目，导入、通过、拒绝、修改知识内容</div>
+            </a>
+        </div>
+        
+        <div class="footer">
+            <p>© 2024 道德经AI数字人学习系统 - 前端预览测试</p>
+            <p>技术栈：uni-app (Vue3 + TypeScript + Vite) + NestJS + PostgreSQL + Redis</p>
+            <p>设计风格：国学传统色 + 科技现代感</p>
+        </div>
+    </div>
+</body>
+</html>

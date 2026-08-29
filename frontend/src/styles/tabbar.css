@@ -1,0 +1,107 @@
+/* TabBar样式 - 国学风格+科技风 */
+
+/* TabBar容器 */
+.uni-tabbar {
+  background-color: #fffdf7 !important;
+  border-top: 1rpx solid rgba(201, 169, 110, 0.2) !important;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.05) !important;
+}
+
+/* TabBar项 */
+.uni-tabbar-border {
+  background-color: rgba(201, 169, 110, 0.1) !important;
+}
+
+/* TabBar图标 */
+.uni-tabbar__icon {
+  width: 48rpx !important;
+  height: 48rpx !important;
+  margin-bottom: 4rpx !important;
+}
+
+.uni-tabbar__icon image {
+  width: 48rpx !important;
+  height: 48rpx !important;
+}
+
+/* TabBar文字 */
+.uni-tabbar__label {
+  font-size: 20rpx !important;
+  color: #8a7f6a !important;
+  margin-top: 4rpx !important;
+}
+
+/* 选中状态 */
+.uni-tabbar__item--selected .uni-tabbar__label {
+  color: #5b6b52 !important;
+  font-weight: 600 !important;
+}
+
+/* 图标选中状态 */
+.uni-tabbar__item--selected .uni-tabbar__icon {
+  transform: scale(1.1) !important;
+  transition: transform 0.3s ease !important;
+}
+
+/* 科技感边框效果 */
+.uni-tabbar::before {
+  content: '';
+  position: absolute;
+  top: -2rpx;
+  left: 0;
+  right: 0;
+  height: 2rpx;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(201, 169, 110, 0.5) 20%, 
+    rgba(52, 152, 219, 0.5) 80%, 
+    transparent 100%);
+  z-index: 1;
+}
+
+/* 响应式调整 */
+@media (min-width: 768px) {
+  .uni-tabbar {
+    padding: 10rpx 0 !important;
+  }
+  
+  .uni-tabbar__icon {
+    width: 56rpx !important;
+    height: 56rpx !important;
+  }
+  
+  .uni-tabbar__icon image {
+    width: 56rpx !important;
+    height: 56rpx !important;
+  }
+  
+  .uni-tabbar__label {
+    font-size: 22rpx !important;
+  }
+}
+
+/* 动画效果 */
+.uni-tabbar__item {
+  transition: all 0.3s ease !important;
+}
+
+.uni-tabbar__item:active {
+  transform: scale(0.95) !important;
+}
+
+/* 选中状态动画 */
+.uni-tabbar__item--selected {
+  animation: tabPulse 0.3s ease !important;
+}
+
+@keyframes tabPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
