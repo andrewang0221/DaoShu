@@ -12,6 +12,12 @@ export class KnowledgeController {
     return this.knowledge.recommend(user.id, dto);
   }
 
+  /** 我提交过的推荐记录（含审核状态） */
+  @Get('my-recommendations')
+  myRecommendations(@CurrentUser() user: AuthUser) {
+    return this.knowledge.myRecommendations(user.id);
+  }
+
   /** 检索总库（游客可预览，公开只读） */
   @Public()
   @Get('items')

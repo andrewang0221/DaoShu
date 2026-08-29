@@ -23,6 +23,7 @@ export const useAppStore = defineStore('app', {
     user: null as UserInfo | null,
     digitalHuman: null as DigitalHumanInfo | null,
     quizScores: null as Record<string, number> | null,
+    pendingStudyChapter: null as number | null,
   }),
   getters: {
     isLoggedIn: (s) => !!s.token,

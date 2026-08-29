@@ -40,7 +40,7 @@
           </view>
         </view>
       </view>
-      <view v-if="thinking" class="msg-row row-assistant">
+      <view v-if="thinking && !streaming" class="msg-row row-assistant">
         <view class="bubble assistant thinking">◌ 正在参悟…</view>
       </view>
       <view id="msg-bottom" class="msg-bottom"></view>
@@ -234,6 +234,7 @@ const dhParams3d = computed(
 const messages = ref<ChatMessage[]>([]);
 const input = ref('');
 const thinking = ref(false);
+const streaming = ref(false);
 const scrollInto = ref('');
 const conversationId = ref('');
 const mood = ref<AvatarMood>('calm');
@@ -347,22 +348,61 @@ async function send() {
   messages.value.push({ id: `u-${Date.now()}`, role: 'user', content, citations: [], createdAt: '' });
   scrollToBottom();
   thinking.value = true;
+  streaming.value = false;
   // 提问瞬间：惊讶 → 转入沉思
   setMood('surprised', 900);
   setTimeout(() => {
     if (thinking.value) setMood('thinking');
   }, 900);
+
+  const placeholderId = `a-${Date.now()}`;
+  let streamed = false;
   try {
-    const answer = await api.ask(conversationId.value, content);
-    messages.value.push(answer);
+    // 优先流式输出：首段到达时插入占位气泡，增量追加
+    const final = await api.askStream(conversationId.value, content, (delta) => {
+      if (!streamed) {
+        streamed = true;
+        streaming.value = true;
+        messages.value.push({
+          id: placeholderId,
+          role: 'assistant',
+          content: '',
+          citations: [],
+          createdAt: '',
+        });
+      }
+      const m = messages.value.find((x) => x.id === placeholderId);
+      if (m) m.content += delta;
+      scrollToBottom();
+    });
+    if (streamed) {
+      const idx = messages.value.findIndex((m) => m.id === placeholderId);
+      if (idx >= 0) messages.value.splice(idx, 1, final);
+    } else {
+      messages.value.push(final);
+    }
     // 回答到达：微笑开示，片刻后回归平和
     setMood('smile', 3000);
     // 语音播报（开启时数字人开口说话，口型同步）
-    if (ttsOn.value && answer.content) speak(answer.content);
-  } catch {
-    setMood('calm');
+    if (ttsOn.value && final.content) speak(final.content);
+  } catch (e) {
+    if (!streamed) {
+      // 流式不可用：整体回退到普通问答
+      try {
+        const answer = await api.ask(conversationId.value, content);
+        messages.value.push(answer);
+        setMood('smile', 3000);
+        if (ttsOn.value && answer.content) speak(answer.content);
+      } catch {
+        setMood('calm');
+      }
+    } else {
+      setMood('calm');
+      uni.showToast({ title: '回答中断，请重试', icon: 'none' });
+    }
   } finally {
     thinking.value = false;
+    streaming.value = false;
     scrollToBottom();
   }
 }
@@ -632,8 +672,12 @@ function applyDh(dh: {
 .page {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  /* tab 页高度用 100%：uni-app H5 的 page-wrapper 已扣除 tabBar 高度，
+     写 100vh 会被底部 tabBar 盖住输入框 */
+  height: 100%;
+  box-sizing: border-box;
   background: #f7f3ea;
+  overflow: hidden;
 }
 .top-bar {
   display: flex;

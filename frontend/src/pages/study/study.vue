@@ -377,6 +377,12 @@ async function loadList() {
   loading.value = true;
   try {
     list.value = await api.studyChapters();
+    // 从其他页面跳转进来时，自动打开指定章节（如知识检索结果、知识基座深入研学）
+    if (store.pendingStudyChapter) {
+      const no = store.pendingStudyChapter;
+      store.pendingStudyChapter = null;
+      openChapter(no);
+    }
   } catch {
     /* 静默失败 */
   } finally {

@@ -53,6 +53,32 @@ export class KnowledgeService {
     return { item: rows[0] };
   }
 
+  /** 查询我提交过的推荐记录（含审核状态） */
+  async myRecommendations(userId: string) {
+    if (IS_DEMO()) {
+      return this.demoPending
+        .filter((i) => (i as Record<string, unknown>).submitterId === userId)
+        .reverse()
+        .map((i) => ({
+          id: i.id,
+          chapterNo: i.chapterNo ?? null,
+          content: i.content,
+          source: i.source,
+          status: i.status,
+          createdAt: i.createdAt ?? new Date().toISOString(),
+        }));
+    }
+    return this.db.query<Record<string, unknown>>(
+      `SELECT id, chapter_no AS "chapterNo", content, source, status,
+              review_note AS "reviewNote", created_at AS "createdAt"
+       FROM knowledge_items
+       WHERE submitter_id = $1 AND source_type = 'member_recommend'
+       ORDER BY created_at DESC
+       LIMIT 100`,
+      [userId],
+    );
+  }
+
   /** 检索总库（演示模式直接检索 JSON 知识库） */
   async search(chapterNo?: number, keyword?: string) {
     if (IS_DEMO() || !this.db.isAvailable) {

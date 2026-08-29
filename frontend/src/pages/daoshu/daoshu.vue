@@ -114,7 +114,25 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { api } from '../../api';
+import { useAppStore } from '../../store';
 import TaijiBackButton from '../../components/TaijiBackButton.vue';
+
+const store = useAppStore();
+store.restore();
+
+/** 未登录时引导登录（工具类 LLM 调用需要账号） */
+function requireLogin(action: string): boolean {
+  if (store.isLoggedIn) return true;
+  uni.showModal({
+    title: '请先登录',
+    content: `${action}需要先登录账号`,
+    confirmText: '去登录',
+    success: (r) => {
+      if (r.confirm) uni.navigateTo({ url: '/pages/login/login' });
+    },
+  });
+  return false;
+}
 
 const frameworks = ref<any>({});
 const alignmentKnowledge = ref<any[]>([]);
@@ -141,6 +159,7 @@ onMounted(async () => {
 
 async function doReflect() {
   if (!reflectText.value.trim()) return;
+  if (!requireLogin('反思链自检')) return;
   reflecting.value = true;
   try {
     reflectResult.value = await api.daoshuReflect(reflectText.value);
@@ -153,6 +172,7 @@ async function doReflect() {
 
 async function doAudit() {
   if (!auditText.value.trim()) return;
+  if (!requireLogin('四维审计')) return;
   auditing.value = true;
   try {
     auditResult.value = await api.daoshuAudit(auditText.value);

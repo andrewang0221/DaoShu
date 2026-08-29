@@ -1,12 +1,13 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { AuthUser, CurrentUser } from '../common';
+import { AuthUser, CurrentUser, Public } from '../common';
 import { IndustryService } from './industry.service';
 
 @Controller('industry')
 export class IndustryController {
   constructor(private readonly service: IndustryService) {}
 
-  /** 行业 Agent 矩阵列表（预置 + 自定义） */
+  /** 行业 Agent 矩阵列表（预置 + 自定义，游客可浏览） */
+  @Public()
   @Get('agents')
   list() {
     return this.service.list();
@@ -27,7 +28,8 @@ export class IndustryController {
     return this.service.detect(body?.profile ?? '', user.id);
   }
 
-  /** 单个行业 Agent 详情（含注入包） */
+  /** 单个行业 Agent 详情（含注入包，游客可浏览） */
+  @Public()
   @Get('agents/:code')
   get(@Param('code') code: string) {
     return this.service.get(code);
@@ -45,7 +47,8 @@ export class IndustryController {
     return this.service.unlock(code, user.id);
   }
 
-  /** 行业案例库（FR-P03：最近调用问答沉淀） */
+  /** 行业案例库（FR-P03：最近调用问答沉淀，游客可浏览） */
+  @Public()
   @Get('agents/:code/cases')
   cases(@Param('code') code: string) {
     return this.service.cases(code);

@@ -54,7 +54,12 @@
     </view>
 
     <!-- 主要内容区域 -->
-    <scroll-view class="main-content" scroll-y>
+    <scroll-view
+      class="main-content"
+      scroll-y
+      :scroll-into-view="scrollIntoId"
+      scroll-with-animation
+    >
       <!-- 欢迎横幅 - 电脑端全屏 -->
       <view class="hero-section desktop-hero">
         <view class="hero-background">
@@ -140,7 +145,7 @@
           <text class="why-footer-text">两千五百年后，道枢以AI为工具，让这部自然规律之学重新可读、可问、可用——与老子跨越时空对话。</text>
           <view class="why-footer-actions">
             <button class="btn-primary large" @tap="startJourney">☯ 开始研学</button>
-            <button class="btn-outline" @tap="goToKnowledgeBase">浏览经文</button>
+            <button class="btn-outline" @tap="goToStudy">浏览经文</button>
           </view>
         </view>
       </view>
@@ -474,7 +479,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, nextTick } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import { useAppStore } from '../../store';
 import { api, type StudyChapterList } from '../../api';
@@ -485,6 +490,9 @@ store.restore();
 
 // 章节研学进度（游客/未登录时为 null，显示免费试学）
 const studySummary = ref<{ studiedCount: number; percent: number } | null>(null);
+
+// 首页内容区锚点滚动目标（scroll-into-view）
+const scrollIntoId = ref('');
 
 async function loadStudySummary() {
   try {
@@ -696,24 +704,40 @@ onMounted(() => {
 
 // 滚动到指定区域
 function scrollToSection(sectionId: string) {
-  // 在uni-app中，可以使用页面滚动API
-  uni.createSelectorQuery().select('#' + sectionId).boundingClientRect((rect: any) => {
-    if (rect) {
-      uni.pageScrollTo({
-        scrollTop: rect.top,
-        duration: 300
-      });
-    }
-  }).exec();
+  // #ifdef H5
+  const el = document.getElementById(sectionId);
+  if (el) {
+    const navPx = uni.upx2px(132); // 顶部固定导航栏高度，留出间距
+    const top = el.getBoundingClientRect().top + window.scrollY - navPx;
+    window.scrollTo({ top: top > 0 ? top : 0, behavior: 'smooth' });
+    return;
+  }
+  // #endif
+  // 非 H5 兜底：使用 scroll-view 的 scroll-into-view
+  scrollIntoId.value = '';
+  nextTick(() => {
+    scrollIntoId.value = sectionId;
+  });
 }
 
 // 导航方法
 function startJourney() {
+  if (!getToken()) {
+    uni.showModal({
+      title: '请先登录',
+      content: '开始研学需要先登录账号，登录后即可认养数字人并同步研学进度',
+      confirmText: '去登录',
+      success: (res) => {
+        if (res.confirm) uni.navigateTo({ url: '/pages/login/login' });
+      }
+    });
+    return;
+  }
   if (!store.digitalHuman) {
     uni.navigateTo({ url: '/pages/adoption/quiz' });
     return;
   }
-  uni.navigateTo({ url: '/pages/chat/chat' });
+  uni.switchTab({ url: '/pages/chat/chat' });
 }
 
 function learnMore() {
@@ -725,7 +749,7 @@ function goToChat() {
     uni.showToast({ title: '请先认养数字人', icon: 'none' });
     return;
   }
-  uni.navigateTo({ url: '/pages/chat/chat' });
+  uni.switchTab({ url: '/pages/chat/chat' });
 }
 
 function goToKnowledge() {
@@ -785,14 +809,14 @@ function goToAdoption() {
     return;
   }
   if (store.digitalHuman) {
-    uni.navigateTo({ url: '/pages/chat/chat' });
+    uni.switchTab({ url: '/pages/chat/chat' });
   } else {
     uni.navigateTo({ url: '/pages/adoption/quiz' });
   }
 }
 
 function goToMarket() {
-  uni.navigateTo({ url: '/pages/market/market' });
+  uni.switchTab({ url: '/pages/market/market' });
 }
 
 function publishKnowledge() {
@@ -869,7 +893,7 @@ function discussWithAI() {
     uni.showToast({ title: '请先认养数字人', icon: 'none' });
     return;
   }
-  uni.navigateTo({ url: '/pages/chat/chat' });
+  uni.switchTab({ url: '/pages/chat/chat' });
 }
 </script>
 
@@ -2429,11 +2453,53 @@ function discussWithAI() {
     grid-template-columns: repeat(2, 1fr);
   }
   
-  .footer-links {
-    grid-template-columns: 1fr;
-    gap: 40rpx;
+  .footer {
+    padding: 50rpx 30rpx 30rpx;
   }
-  
+
+  .footer-brand {
+    margin-bottom: 36rpx;
+  }
+
+  .footer-logo {
+    font-size: 32rpx;
+  }
+
+  .footer-links {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30rpx 24rpx;
+    margin-bottom: 36rpx;
+  }
+
+  .footer-section {
+    gap: 12rpx;
+  }
+
+  .footer-section:first-child {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12rpx 28rpx;
+  }
+
+  .footer-section:first-child .footer-title {
+    width: 100%;
+    margin-bottom: 4rpx;
+  }
+
+  .footer-title {
+    font-size: 26rpx;
+  }
+
+  .footer-link {
+    font-size: 24rpx;
+  }
+
+  .footer-copyright {
+    font-size: 22rpx;
+  }
+
   .guest-mode {
     flex-direction: column;
     gap: 15rpx;

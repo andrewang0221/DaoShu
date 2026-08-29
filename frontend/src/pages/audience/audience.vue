@@ -206,7 +206,7 @@ function startJourney() {
     uni.navigateTo({ url: '/pages/adoption/quiz' });
     return;
   }
-  uni.navigateTo({ url: '/pages/chat/chat' });
+  uni.switchTab({ url: '/pages/chat/chat' });
 }
 
 function goKnowledgeBase() {

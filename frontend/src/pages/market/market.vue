@@ -37,12 +37,18 @@
 import { onShow } from '@dcloudio/uni-app';
 import { reactive, ref } from 'vue';
 import { api, MarketItem } from '../../api';
+import { useAppStore } from '../../store';
+
+const store = useAppStore();
 
 const tab = ref<'list' | 'publish'>('list');
 const items = ref<MarketItem[]>([]);
 const pub = reactive({ content: '', tags: '' });
 
-onShow(() => load());
+onShow(() => {
+  store.restore();
+  load();
+});
 
 function switchTab(t: 'list' | 'publish') {
   tab.value = t;
@@ -59,6 +65,17 @@ async function load() {
 
 async function publish() {
   if (!pub.content.trim()) return;
+  if (!store.isLoggedIn) {
+    uni.showModal({
+      title: '请先登录',
+      content: '公开知识到市场需要先登录账号',
+      confirmText: '去登录',
+      success: (r) => {
+        if (r.confirm) uni.navigateTo({ url: '/pages/login/login' });
+      },
+    });
+    return;
+  }
   uni.showLoading({ title: '公开中…' });
   try {
     await api.publishMarket({

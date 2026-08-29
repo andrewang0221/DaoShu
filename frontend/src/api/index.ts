@@ -52,6 +52,15 @@ export interface KnowledgeItem {
   content?: string;
   source?: string;
 }
+export interface MyRecommendation {
+  id: string;
+  chapterNo?: number | null;
+  content: string;
+  source: string;
+  status: 'pending' | 'approved' | 'rejected' | 'needs_revision' | string;
+  reviewNote?: string | null;
+  createdAt?: string;
+}
 export interface MarketItem {
   id: string;
   content?: string;
@@ -396,6 +405,49 @@ export const api = {
   getMessages: (convId: string) => get<ChatMessage[]>(`/chat/conversations/${convId}/messages`),
   ask: (convId: string, content: string) =>
     post<ChatMessage>(`/chat/conversations/${convId}/messages`, { content }, { timeout: 180000 }),
+  /** 流式问答（SSE，H5 fetch 逐段解析）：onDelta 增量回调，resolve 返回完整消息 */
+  askStream: async (
+    convId: string,
+    content: string,
+    onDelta: (text: string) => void,
+  ): Promise<ChatMessage> => {
+    const resp = await fetch(`${API_BASE}/chat/conversations/${convId}/messages/stream`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(getToken() ? { Authorization: `Bearer ${getToken()}` } : {}),
+      },
+      body: JSON.stringify({ content }),
+    });
+    if (!resp.ok || !resp.body) throw new Error(`连接失败（${resp.status}）`);
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let finalMsg: ChatMessage | null = null;
+    const handle = (payload: string) => {
+      const evt = JSON.parse(payload) as {
+        type: string;
+        content?: string;
+        message?: ChatMessage;
+      };
+      if (evt.type === 'delta' && evt.content) onDelta(evt.content);
+      else if (evt.type === 'final' && evt.message) finalMsg = evt.message;
+      else if (evt.type === 'error') throw new Error('回答失败');
+    };
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const parts = buffer.split('\n\n');
+      buffer = parts.pop() ?? '';
+      for (const part of parts) {
+        const line = part.split('\n').find((l) => l.startsWith('data: '));
+        if (line) handle(line.slice(6));
+      }
+    }
+    if (!finalMsg) throw new Error('未收到完整回答');
+    return finalMsg;
+  },
 
   // 知识库
   searchKnowledge: (keyword?: string) =>
@@ -404,6 +456,8 @@ export const api = {
     get<KnowledgeItem[]>(`/knowledge/items?chapterNo=${chapterNo}`, { silent: true }),
   recommend: (dto: { content: string; source: string; chapterNo?: number; tags?: string[] }) =>
     post('/knowledge/recommend', dto),
+  myRecommendations: () =>
+    get<MyRecommendation[]>('/knowledge/my-recommendations', { silent: true }),
 
   // 知识市场
   publishMarket: (dto: { content: string; sceneTags?: string[]; digitalHumanId?: string }) =>

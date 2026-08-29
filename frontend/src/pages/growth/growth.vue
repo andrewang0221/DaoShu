@@ -70,7 +70,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { api } from '../../api';
+import { useAppStore } from '../../store';
 import TaijiBackButton from '../../components/TaijiBackButton.vue';
+
+const store = useAppStore();
+store.restore();
 
 const quizQuestions = ref<any[]>([]);
 const currentQ = ref(0);
@@ -119,6 +123,17 @@ function selectOption(score: number) {
 }
 
 async function submitQuiz() {
+  if (!store.isLoggedIn) {
+    uni.showModal({
+      title: '请先登录',
+      content: '生成道系人格测试结果需要先登录账号',
+      confirmText: '去登录',
+      success: (r) => {
+        if (r.confirm) uni.navigateTo({ url: '/pages/login/login' });
+      },
+    });
+    return;
+  }
   try {
     const r = await api.submitDaoxiQuiz(answers.value);
     quizDone.value = true;

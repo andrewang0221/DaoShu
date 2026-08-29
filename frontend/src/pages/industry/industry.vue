@@ -158,6 +158,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { api } from '../../api';
+import { useAppStore } from '../../store';
 import TaijiBackButton from '../../components/TaijiBackButton.vue';
 
 const agents = ref<any[]>([]);
@@ -168,6 +169,23 @@ const invoking = ref(false);
 const unlockedCodes = ref<Set<string>>(new Set());
 const trialLeft = ref(2);
 const cases = ref<any[]>([]);
+
+const store = useAppStore();
+store.restore();
+
+/** 未登录时引导登录（交互类操作需要账号） */
+function requireLogin(action: string): boolean {
+  if (store.isLoggedIn) return true;
+  uni.showModal({
+    title: '请先登录',
+    content: `${action}需要先登录账号`,
+    confirmText: '去登录',
+    success: (res) => {
+      if (res.confirm) uni.navigateTo({ url: '/pages/login/login' });
+    },
+  });
+  return false;
+}
 
 // 自定义行业识别
 const profileInput = ref('');
@@ -216,6 +234,8 @@ async function loadAgents() {
 }
 
 async function loadUnlocks() {
+  // 游客无需解锁状态，跳过（避免 401 提示）
+  if (!store.isLoggedIn) return;
   try {
     const res = await api.industryUnlocks();
     unlockedCodes.value = new Set(res.codes ?? []);
@@ -227,6 +247,7 @@ async function loadUnlocks() {
 /** 自定义行业识别：输入一段描述 → 识别行业 → 生成专属 Agent */
 async function doDetect() {
   if (!profileInput.value.trim() || detecting.value) return;
+  if (!requireLogin('行业识别与生成专属 Agent')) return;
   detecting.value = true;
   detectResult.value = null;
   try {
@@ -272,6 +293,7 @@ function refreshTrialLeft(_code: string) {
 /** 解锁：扣积分（自定义包生成者本人免费） */
 async function doUnlock() {
   if (!selectedAgent.value) return;
+  if (!requireLogin('解锁行业包')) return;
   const cost = selectedAgent.value.unlockCost ?? 0;
   const confirmed = await new Promise<boolean>((resolve) => {
     uni.showModal({
@@ -293,6 +315,7 @@ async function doUnlock() {
 
 async function doInvoke() {
   if (!invokeQuestion.value.trim() || !selectedAgent.value || invoking.value) return;
+  if (!requireLogin('行业问答')) return;
   invoking.value = true;
   try {
     invokeResult.value = await api.industryInvoke(selectedAgent.value.code, invokeQuestion.value);

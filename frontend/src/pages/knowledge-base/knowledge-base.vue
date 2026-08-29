@@ -371,7 +371,9 @@ async function loadPreviewChapters() {
 }
 
 function readChapter(chapterNo?: number) {
-  uni.navigateTo({ url: `/pages/knowledge/knowledge?chapter=${chapterNo ?? 1}` });
+  // 跳转学习页阅读器，自动打开该章（含原文/注音/今译/注解/概念图）
+  store.pendingStudyChapter = chapterNo ?? 1;
+  uni.switchTab({ url: '/pages/study/study' });
 }
 
 function discussWithAI() {
@@ -379,7 +381,7 @@ function discussWithAI() {
     uni.showToast({ title: '请先认养数字人', icon: 'none' });
     return;
   }
-  uni.navigateTo({ url: '/pages/chat/chat' });
+  uni.switchTab({ url: '/pages/chat/chat' });
 }
 
 function login() {

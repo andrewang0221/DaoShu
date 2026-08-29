@@ -221,6 +221,17 @@ async function doPublish() {
     uni.showToast({ title: '请写下你的困惑', icon: 'none' });
     return;
   }
+  if (!store.isLoggedIn) {
+    uni.showModal({
+      title: '请先登录',
+      content: '发布求道帖需要先登录账号',
+      confirmText: '去登录',
+      success: (r) => {
+        if (r.confirm) uni.navigateTo({ url: '/pages/login/login' });
+      },
+    });
+    return;
+  }
   if (isPaid.value && pointsBalance.value < bounty.value) {
     uni.showToast({ title: `积分不足（余额 ${pointsBalance.value}）`, icon: 'none' });
     return;
@@ -267,6 +278,17 @@ async function doAnswer(q: DaoInquiry) {
   if (answering.value) return;
   if (!answerText.value.trim()) {
     uni.showToast({ title: '请写下你的回答', icon: 'none' });
+    return;
+  }
+  if (!store.isLoggedIn) {
+    uni.showModal({
+      title: '请先登录',
+      content: '回答问题需要先登录账号',
+      confirmText: '去登录',
+      success: (r) => {
+        if (r.confirm) uni.navigateTo({ url: '/pages/login/login' });
+      },
+    });
     return;
   }
   answering.value = true;

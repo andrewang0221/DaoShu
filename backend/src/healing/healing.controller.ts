@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Public } from '../common';
 import { HealingService } from './healing.service';
 
 @Controller('healing')
@@ -17,7 +18,8 @@ export class HealingController {
     return this.service.sos(body.text);
   }
 
-  /** 四类道家情绪调节练习 */
+  /** 四类道家情绪调节练习（游客可浏览） */
+  @Public()
   @Get('patterns')
   getPatterns() {
     return this.service.getPatterns();

@@ -104,7 +104,25 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { api } from '../../api';
+import { useAppStore } from '../../store';
 import TaijiBackButton from '../../components/TaijiBackButton.vue';
+
+const store = useAppStore();
+store.restore();
+
+/** 未登录时引导登录（工具类 LLM 调用需要账号） */
+function requireLogin(action: string): boolean {
+  if (store.isLoggedIn) return true;
+  uni.showModal({
+    title: '请先登录',
+    content: `${action}需要先登录账号`,
+    confirmText: '去登录',
+    success: (r) => {
+      if (r.confirm) uni.navigateTo({ url: '/pages/login/login' });
+    },
+  });
+  return false;
+}
 
 const emotionText = ref('');
 const assessResult = ref<any>(null);
@@ -130,6 +148,7 @@ onMounted(async () => {
 
 async function doAssess() {
   if (!emotionText.value.trim()) return;
+  if (!requireLogin('情绪识别')) return;
   assessing.value = true;
   try {
     assessResult.value = await api.healingAssess(emotionText.value);
@@ -141,6 +160,7 @@ async function doAssess() {
 
 async function doSOS() {
   if (!sosText.value.trim()) return;
+  if (!requireLogin('焦虑急救')) return;
   sosing.value = true;
   try {
     sosResult.value = await api.healingSOS(sosText.value);
@@ -152,6 +172,7 @@ async function doSOS() {
 
 async function doWeeklyReview() {
   const records = weeklyRecords.value.split('\n').filter(s => s.trim());
+  if (!requireLogin('每周复盘')) return;
   reviewing.value = true;
   try {
     weeklyResult.value = await api.healingWeeklyReview(records);
