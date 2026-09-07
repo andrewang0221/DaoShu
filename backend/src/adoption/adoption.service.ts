@@ -245,7 +245,7 @@ export class AdoptionService {
     return rows[0];
   }
 
-  /** 签署认养契约（用户协议 + IP 资产协议） */
+  /** 签署认养契约（用户协议 + IP 资产协议）；重复签约幂等返回（每数字人一契） */
   async signContract(userId: string, digitalHumanId: string) {
     if (IS_DEMO()) {
       return { id: 'demo-contract', digitalHumanId, signedAt: new Date().toISOString() };
@@ -253,6 +253,7 @@ export class AdoptionService {
     const rows = await this.db.query<Record<string, unknown>>(
       `INSERT INTO adoption_contracts (user_id, digital_human_id, contract_version, agreement_json)
        VALUES ($1, $2, 'v1', $3)
+       ON CONFLICT (digital_human_id) DO UPDATE SET signed_at = now()
        RETURNING id, digital_human_id AS "digitalHumanId", signed_at AS "signedAt"`,
       [userId, digitalHumanId, JSON.stringify({ type: 'adoption', ipClause: 'v1', inheritClause: 'v1' })],
     );

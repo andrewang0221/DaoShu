@@ -179,6 +179,7 @@ import AvatarRenderer from '../../components/AvatarRenderer.vue';
 import { DEFAULT_3D_PARAMS, type Avatar3DParams } from '../../components/canvas-avatar';
 
 const store = useAppStore();
+store.restore();
 const name = ref('');
 const style = ref('ancient_male');
 const styles = [
@@ -448,8 +449,13 @@ async function create() {
     });
     // chat 是 tabBar 页，redirectTo 会静默失败，必须用 switchTab
     setTimeout(() => uni.switchTab({ url: '/pages/chat/chat' }), 1200);
-  } catch {
+  } catch (e: unknown) {
     uni.hideLoading();
+    uni.showToast({
+      title: (e as Error)?.message || '提交失败，请稍后重试',
+      icon: 'none',
+      duration: 2500,
+    });
   } finally {
     submitting.value = false;
   }

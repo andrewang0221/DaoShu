@@ -1,12 +1,13 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
-import { CurrentUser, AuthUser } from '../common';
+import { CurrentUser, AuthUser, Public } from '../common';
 import { SubscriptionService } from './subscription.service';
 
 @Controller('subscription')
 export class SubscriptionController {
   constructor(private readonly service: SubscriptionService) {}
 
-  /** 三级产品计划（体验/Pro/企业） */
+  /** 三级产品计划（体验/Pro/企业，游客可浏览） */
+  @Public()
   @Get('plans')
   plans() {
     return this.service.plans();

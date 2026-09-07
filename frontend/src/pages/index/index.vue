@@ -71,7 +71,9 @@
           <view class="hero-badge">
             <text class="badge-text">☯ 道法自然 · 规律可循 ☯</text>
           </view>
-          <text class="hero-title">道，可道也，非恒道也</text>
+          <view class="hero-title">
+            <text class="title-line">道，可道也，</text><text class="title-line">非恒道也</text>
+          </view>
           <text class="hero-subtitle">老子五千言，讲的是天地万物运行的规律</text>
           <text class="hero-desc">以马王堆帛书《道德经》甲乙本为底本，正读"恒道"真义——道不是玄虚的信仰，而是自然、社会与人事背后可观察、可总结、可运用的客观规律。道枢以AI为工具，把这套东方自然哲学转化为可对话、可研学、可践行的思维方法。</text>
           
@@ -1182,6 +1184,10 @@ function discussWithAI() {
   margin-bottom: 30rpx;
   letter-spacing: 6rpx;
   line-height: 1.2;
+}
+
+.title-line {
+  display: inline;
 }
 
 .hero-subtitle {
@@ -2361,8 +2367,13 @@ function discussWithAI() {
   }
   
   .hero-title {
-    font-size: 60rpx;
+    font-size: 62rpx;
     letter-spacing: 4rpx;
+    line-height: 1.35;
+  }
+
+  .title-line {
+    display: block;
   }
   
   .hero-subtitle {

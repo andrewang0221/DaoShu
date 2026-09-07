@@ -58,6 +58,10 @@
 import { ref, onMounted } from 'vue';
 import { api } from '../../api';
 import TaijiBackButton from '../../components/TaijiBackButton.vue';
+import { useAppStore } from '../../store';
+
+const store = useAppStore();
+store.restore();
 
 const plans = ref<any[]>([]);
 const selectedPlan = ref<any>(null);
@@ -91,7 +95,7 @@ function featureLabel(code: string) {
 onMounted(async () => {
   try {
     plans.value = await api.subscriptionPlans();
-    await loadMyPlan();
+    if (store.isLoggedIn) await loadMyPlan();
   } catch {
     uni.showToast({ title: '加载计划失败', icon: 'none' });
   }
@@ -113,6 +117,17 @@ function selectPlan(plan: any) {
 
 async function doPurchase() {
   if (!selectedPlan.value) return;
+  if (!store.isLoggedIn) {
+    uni.showModal({
+      title: '请先登录',
+      content: '开通订阅计划需要先登录账号',
+      confirmText: '去登录',
+      success: (r) => {
+        if (r.confirm) uni.navigateTo({ url: '/pages/login/login' });
+      },
+    });
+    return;
+  }
   purchasing.value = true;
   try {
     const r = await api.subscriptionOrder(selectedPlan.value.code);

@@ -32,6 +32,7 @@ import TaijiBackButton from '../../components/TaijiBackButton.vue';
 import { useAppStore } from '../../store';
 
 const store = useAppStore();
+store.restore();
 const questions = ref<QuizQuestion[]>([]);
 const answers = ref<Record<string, number>>({});
 
@@ -50,8 +51,16 @@ onLoad(async () => {
         title: '请先登录',
         content: '认养数字人需要先登录账号，登录后再来测一测吧',
         confirmText: '去登录',
+        cancelText: '返回',
         success: (res) => {
-          if (res.confirm) uni.navigateTo({ url: '/pages/login/login' });
+          if (res.confirm) {
+            uni.navigateTo({ url: '/pages/login/login' });
+          } else {
+            // 取消登录引导：返回上一页，避免困在空白问卷页
+            uni.navigateBack({
+              fail: () => uni.switchTab({ url: '/pages/index/index' }),
+            });
+          }
         }
       });
     } else {
