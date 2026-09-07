@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 解析《汪胜岩道德经注解2026.md》为 81 章结构化知识库 JSON
+ * 解析本地受保护原始资料为 81 章结构化知识库 JSON
  *
  * 输出结构：
  * {
@@ -21,12 +21,15 @@
  * }
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
-const SRC = join(ROOT, '汪胜岩道德经注解2026.md');
+const DEFAULT_SRC = join(ROOT, 'private', 'taoteching-source.md');
+const SRC = process.env.TAOTECHING_SOURCE_PATH
+  ? resolve(ROOT, process.env.TAOTECHING_SOURCE_PATH)
+  : DEFAULT_SRC;
 const OUT = join(ROOT, 'knowledge-base', 'taoteching-wsy-2026.json');
 
 const CN = { 一: 1, 二: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9, 十: 10 };
@@ -45,7 +48,14 @@ const numToCn = (n) => {
   return units[Math.floor(n / 10)] + '十' + (n % 10 ? units[n % 10] : '');
 };
 
-const text = readFileSync(SRC, 'utf8');
+let text = '';
+try {
+  text = readFileSync(SRC, 'utf8');
+} catch (error) {
+  console.error(`[FATAL] 无法读取源文件：${SRC}`);
+  console.error('请在本地提供受保护原始资料，并通过 TAOTECHING_SOURCE_PATH 指定路径。');
+  throw error;
+}
 const lines = text.split(/\r?\n/);
 
 // 1. 定位章节
@@ -228,7 +238,7 @@ for (let n = 1; n <= 81; n++) {
 if (missing.length) warnings.push(`缺失章节：${missing.join(',')}`);
 
 const meta = {
-  source: '汪胜岩道德经注解2026.md',
+  source: '受版权保护的内部原始资料（未入库）',
   baseText: '帛书甲乙本（个别章通行本）',
   author: '汪胜岩（注解）',
   compiled: '2026',

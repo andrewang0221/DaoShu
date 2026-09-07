@@ -1,11 +1,11 @@
 # 道德经结构化知识库
 
 ## 文件
-- `taoteching-wsy-2026.json` — 81 章结构化知识库（由 `tools/parse-taoteching.mjs` 从《汪胜岩道德经注解2026.md》生成）
+- `taoteching-wsy-2026.json` — 81 章结构化知识库（由 `tools/parse-taoteching.mjs` 从本地受保护原始资料生成）
 
 ## 重新生成
 ```bash
-node tools/parse-taoteching.mjs
+TAOTECHING_SOURCE_PATH=private/taoteching-source.md node tools/parse-taoteching.mjs
 ```
 
 ## 导入数据库
@@ -17,7 +17,7 @@ DATABASE_URL=postgres://user:pass@localhost:5432/taoteching node tools/import-kn
 ```jsonc
 {
   "meta": {
-    "source": "汪胜岩道德经注解2026.md",
+    "source": "受版权保护的内部原始资料（未入库）",
     "baseText": "帛书甲乙本（个别章通行本）",
     "author": "汪胜岩（注解）",
     "compiled": "2026",
